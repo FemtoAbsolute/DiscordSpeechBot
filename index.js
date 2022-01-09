@@ -281,21 +281,21 @@ discordClient.on('message', async (msg) => {
 })
 
 function getHelpString() {
-    let out = '**VOICE COMMANDS:**\n'
-        out += '```'
-        out += 'music help\n'
-        out += 'music play [random, favorites, <genre> or query]\n'
-        out += 'music skip\n'
-        out += 'music pause/resume\n'
-        out += 'music shuffle\n'
-        out += 'music genres\n'
-        out += 'music set favorite\n'
-        out += 'music favorites\n'
-        out += 'music list\n'
-        out += 'music clear list\n';
+    let out = '**Гатс откликается на слово БОТ:**\n'
+        out += 'Все команды на английском языке\n'
+        out += 'Bot help\n'
+        out += 'Bot play [random, favorites, <genre> or query]\n'
+        out += 'Bot skip\n'
+        out += 'Bot pause/resume/unpause\n'
+        out += 'Bot shuffle\n'
+        out += 'Bot genres\n'
+        out += 'Bot set favorite\n'
+        out += 'Bot favorites\n'
+        out += 'Bot list\n'
+        out += 'Bot clear list\n';
         out += '```'
 
-        out += '**TEXT COMMANDS:**\n'
+        out += '**Текстовые команды:**\n'
         out += '```'
         out += _CMD_HELP + '\n'
         out += _CMD_JOIN + '/' + _CMD_LEAVE + '\n'
@@ -392,7 +392,8 @@ function process_commands_query(query, mapKey, userid) {
 
     let out = null;
 
-    const regex = /^music ([a-zA-Z]+)(.+?)?$/;
+    //const regex = /^music ([a-zA-Z]+)(.+?)?$/;
+    const regex = /^bot ([a-zA-Z]+)(.+?)?$/;
     const m = query.toLowerCase().match(regex);
     if (m && m.length) {
         const cmd = (m[1]||'').trim();
@@ -414,6 +415,7 @@ function process_commands_query(query, mapKey, userid) {
             case 'pause':
                 out = _CMD_PAUSE;
                 break;
+            case 'unpause':
             case 'resume':
                 out = _CMD_RESUME;
                 break;
@@ -427,6 +429,7 @@ function process_commands_query(query, mapKey, userid) {
             case 'hello':
                 out = 'hello back =)'
                 break;
+            case 'favorite':
             case 'favorites':
                 out = _CMD_FAVORITES;
                 break;
@@ -439,7 +442,7 @@ function process_commands_query(query, mapKey, userid) {
                 }
                 break;
             case 'play':
-            case 'player':
+            case 'plays':
                 switch(args) {
                     case 'random':
                         out = _CMD_RANDOM;
@@ -903,7 +906,8 @@ async function transcribe_witai(buffer) {
         witAI_lastcallTS = Math.floor(new Date());
         console.log(output)
         stream.destroy()
-         try {
+
+        try {
 			const data = JSON.parse(output); // <<-- If parsed well there was a single chunk and all is good
 			return data.text;
 		} catch (e) {
@@ -912,7 +916,12 @@ async function transcribe_witai(buffer) {
 			const data = JSON.parse(lastChunk); // <<-- parse last chunk
 			return data.text;
 		}
-        return output;
+        
+        // if (output && '_text' in output && output._text.length)
+        //     return output._text
+        // if (output && 'text' in output && output.text.length)
+        //     return output.text
+        // return output;
     } catch (e) { console.log('transcribe_witai 851:' + e); console.log(e) }
 }
 
