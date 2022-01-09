@@ -903,10 +903,15 @@ async function transcribe_witai(buffer) {
         witAI_lastcallTS = Math.floor(new Date());
         console.log(output)
         stream.destroy()
-        //if (output && '_text' in output && output._text.length)
-          //  return output._text
-        //if (output && 'text' in output && output.text.length)
-          //  return output.text
+         try {
+			const data = JSON.parse(output); // <<-- If parsed well there was a single chunk and all is good
+			return data.text;
+		} catch (e) {
+			const chunks = output.split('\r\n'); // <<-- Split into chunks array
+			const lastChunk = chunks.pop(); // <<-- get the last chunk
+			const data = JSON.parse(lastChunk); // <<-- parse last chunk
+			return data.text;
+		}
         return output;
     } catch (e) { console.log('transcribe_witai 851:' + e); console.log(e) }
 }
